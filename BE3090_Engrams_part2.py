@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import scipy.io as sio
 
 from scipy.signal import find_peaks
+from operator import itemgetter
 
-data = sio.loadmat('session1.mat')  # Load in the .mat file containing neuron activity data
+data = sio.loadmat('session1_a_12.mat')  # Load in the .mat file containing neuron activity data
 
 activity = data['neuron_network_imaging'] # Extract the neuron activity data from the loaded .mat file
 
@@ -23,11 +24,24 @@ for neuron in range(activity.shape[1]):        #Loop through each neuron and fin
     peakindices,_ = find_peaks(activity[:, neuron], height = 100, distance = 10)
     peaks.append(peakindices)
 
-plt.figure(figsize=(12, 8))
+Neuronactivationtuples = []
+i = 1
+for neuron in range(len(peaks)):
+    for element in peaks[neuron]:
+        Neuronactivationtuples.append((i,element))
+    i = i+1
+Neuronactivationtuples.sort(key = itemgetter(1))
+print(Neuronactivationtuples)
 
-for neuron in range(activity.shape[1]):
-    plt.vlines(peaks[neuron], neuron, neuron + 0.8)
 
-plt.xlabel('Time (frames)')
-plt.ylabel('Neuron Index')
-plt.show()
+"""Raster plot of neuron activity for letter a"""
+#plt.figure(figsize=(12, 8))
+
+#for neuron in range(activity.shape[1]):
+    #plt.vlines(peaks[neuron], neuron, neuron + 0.8)
+
+#plt.xlabel('Time (frames)')
+#plt.ylabel('Neuron Index')
+#plt.show()
+
+
