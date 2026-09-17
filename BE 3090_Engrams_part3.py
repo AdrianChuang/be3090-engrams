@@ -1,13 +1,18 @@
 import matplotlib.pyplot as plt
 import scipy.io as sio
+import numpy as np
 
 from scipy.signal import find_peaks
 from operator import itemgetter
 data = sio.loadmat('session1_training_chars_12.mat')  # Load in the .mat file containing neuron activity data
 print(data.keys())
-activity = data['neuron_network_imaging'] # Extract the neuron activity data from the loaded .mat file
-traincharsequence = '''0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[]^_`{|}~  '''
-print(len(traincharsequence))
+activity_old = data['neuron_network_imaging'] # Extract the neuron activity data from the loaded .mat file
+print(activity_old.shape)
+activity = np.ascontiguousarray(np.moveaxis(activity_old, 2, 0))
+print(activity)
+print(activity.shape)
+traincharsequence = '''0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[]^_`{|}~    '''
+
 #print(activity.shape)
 #print(activity.dtype)
 #print(activity[:5, :5])
@@ -17,14 +22,14 @@ print(len(traincharsequence))
 #plt.xlabel('Time (frames)')
 #plt.ylabel('Activity')
 #plt.show()
-print(activity)
+print(activity[1].shape)
 print("hello")
 print("end of test")
 codes = []
-
+print(len(activity))
 for letters in activity:
-    peaks = []
-    print(letters.shape[1]) # Initialize an empty list to store peak indices for each neuron
+    peaks = [] # Initialize an empty list to store peak indices for each neuron
+
     for neuron in range(letters.shape[1]):        #Loop through each neuron and find peaks, addding the indices of the peaks to the peaks list
         peakindices,_ = find_peaks(letters[:, neuron], height = 100, distance = 10)
         peaks.append(peakindices)

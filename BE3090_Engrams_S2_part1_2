@@ -1,13 +1,15 @@
-import scipy.io as sio              
-import numpy as np                   
-from scipy.signal import find_peaks  
+import scipy.io as sio               # load .mat file
+import numpy as np                   # array math
+from scipy.signal import find_peaks  # detect firings
 
-data = sio.loadmat('session2_a_misfire_12.mat')
-activity = data['neuron_network_imaging']
+activity = sio.loadmat('session2_a_misfire_12.mat')['neuron_network_imaging']  # (1000, 200)
 
-frames_per = 100        # 1 recall = 100 frames 
+engram = []
+for neuron in range(activity.shape[1]):                     # check every neuron
+    peaks, _ = find_peaks(activity[:, neuron], height=100, distance=10) # Looks for fluorescence peaks that represent neuronal firing.
+    recalls = set(p // 100 for p in peaks)                  # which of the 10 recalls it fired in
+    if len(recalls) >= 7:                                   # Keeps a neuron if it fired in at least 7 of the 10 recalls.
+        engram.append((np.median([p % 100 for p in peaks]), neuron + 1))  # Finds the neuron's typical firing time
 
-#for each neuron: how many recalls it fires in, and its firing time 
-recall_count = []       # how many of the 10 recalls each neuron appears in
-fire_time = []          # typical time within a recall
-
+engram.sort()                                               # order by firing time
+print('engram sequence:', [n for t, n in engram])
