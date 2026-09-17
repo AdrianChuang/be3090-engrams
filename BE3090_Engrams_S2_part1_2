@@ -1,0 +1,13 @@
+import scipy.io as sio              
+import numpy as np                   
+from scipy.signal import find_peaks  
+
+data = sio.loadmat('session2_a_misfire_12.mat')
+activity = data['neuron_network_imaging']
+
+frames_per = 100        # 1 recall = 100 frames 
+
+#for each neuron: how many recalls it fires in, and its firing time 
+recall_count = []       # how many of the 10 recalls each neuron appears in
+fire_time = []          # typical time within a recall
+
