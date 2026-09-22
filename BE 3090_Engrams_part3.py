@@ -10,12 +10,77 @@ activity_old = data['neuron_network_imaging'] # Extract the neuron activity data
 print(activity_old.shape)
 activity = np.ascontiguousarray(np.moveaxis(activity_old, 2, 0))
 print(activity)
-print(activity.shape)
-traincharsequence = '''0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[]^_`{|}~    '''
+print(activity.shape)      #'''0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[]^_`{|}~    '''
+
+with open("char_train.txt", "r") as file:
+    traincharsequence = file.read()  # Read the contents of the text file into a string variable:
+print(traincharsequence)
+
 
 #print(activity.shape)
 #print(activity.dtype)
 #print(activity[:5, :5])
+def getsequence(arr_peaks):
+     # takes in a list of tuples of (arr of peak indices for the character, the character)
+
+    Neuronactivationtuples = arr_peaks
+    
+
+    codes_A = [] # a list of lists (containing tuples) containing the 10 iterations of A
+    for i in range(1000, 11000, 1000): #This iterates through neuronactivationtuples and blocks it into 1000 ms segments
+        temparr = []
+        
+        for tuple in Neuronactivationtuples:
+            if(i - 1000 < tuple[1]*10 <= i):
+                temparr.append(tuple)
+        codes_A.append(temparr)
+        # while(count < len(Neuronactivationtuples)):
+        #     if(Neuronactivationtuples[count][1] < i - 1000):
+        #         temparr.append(Neuronactivationtuples[count])
+        #         count = count+1
+        # codes_A.append(temparr) # adds this sequence of A engram to codes_A
+
+    #now we have to determine which neuron firings are repeated across all codes
+    
+    denoised_neurons = []
+    for neurons in codes_A[0]:
+        instances = 1
+        for i in range (1,10,1):
+            if((neurons[0], neurons[1]+i*100) in codes_A[i]):
+                instances = instances + 1
+            elif((neurons[0], neurons[1]+i*100 - 1) in codes_A[i]):
+                instances = instances + 1
+            elif((neurons[0], neurons[1]+i*100 - 2) in codes_A[i]):
+                instances = instances + 1
+            elif((neurons[0], neurons[1]+i*100 - 3) in codes_A[i]):
+                instances = instances + 1
+            elif((neurons[0], neurons[1]+i*100 + 1) in codes_A[i]):
+                instances = instances + 1
+            elif((neurons[0], neurons[1]+i*100 + 2) in codes_A[i]):
+                instances = instances + 1
+            elif((neurons[0], neurons[1]+i*100 + 3) in codes_A[i]):
+                instances = instances + 1
+        if(instances >= 5):
+            denoised_neurons.append((neurons[0], neurons[1], instances))
+        
+    return(str(denoised_neurons))
+
+
+
+
+
+"""Raster plot of neuron activity for letter a"""
+#plt.figure(figsize=(12, 8))
+
+#for neuron in range(activity.shape[1]):
+    #plt.vlines(peaks[neuron], neuron, neuron + 0.8)
+
+#plt.xlabel('Time (frames)')
+#plt.ylabel('Neuron Index')
+#plt.show()
+
+
+
 
 """Visualize Neuron activity of one neuron over time"""
 #plt.plot(activity[:,49])
@@ -42,29 +107,13 @@ for letters in activity:
         i = i+1
     Neuronactivationtuples.sort(key = itemgetter(1))
     codes.append(Neuronactivationtuples)
-    #print(Neuronactivationtuples)
 # determine numeric code sequence from+
 
 training_set_key = []
 print(len(codes))
 for i in range (len(codes)):
         training_set_key.append((codes[i], traincharsequence[i]))
-print(training_set_key)    
 
-
-
-
-
-
-
-"""Raster plot of neuron activity for letter a"""
-#plt.figure(figsize=(12, 8))
-
-#for neuron in range(activity.shape[1]):
-    #plt.vlines(peaks[neuron], neuron, neuron + 0.8)
-
-#plt.xlabel('Time (frames)')
-#plt.ylabel('Neuron Index')
-#plt.show()
-
-
+#for l in range (len(training_set_key)):
+        print(training_set_key[0][1])
+        print(getsequence(training_set_key[0][0]))
