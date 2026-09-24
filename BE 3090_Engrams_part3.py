@@ -62,7 +62,7 @@ def getsequence(arr_peaks):
                 instances = instances + 1
         if(instances >= 5):
             denoised_neurons.append((neurons[0], neurons[1], instances))
-        
+    print(len(denoised_neurons))
     return(str(denoised_neurons))
 
 
@@ -112,8 +112,8 @@ for letters in activity:
 training_set_key = []
 print(len(codes))
 for i in range (len(codes)):
-        training_set_key.append((codes[i], traincharsequence[i]))
+        training_set_key.append((traincharsequence[i], codes[i]))
 
 #for l in range (len(training_set_key)):
-        print(training_set_key[0][1])
-        print(getsequence(training_set_key[0][0]))
+print(training_set_key[0][0]) #prints out char in place (l, 0)
+print(getsequence(training_set_key[0][1])) #prints out sequence from arr in place (l, 1)
