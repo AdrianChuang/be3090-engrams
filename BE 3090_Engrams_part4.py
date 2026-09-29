@@ -1,3 +1,4 @@
+import numpy as np
 def similarity_score(engram, sequence):
     # engram/sequence: neuron IDs in firing order
     matches = 0
@@ -24,3 +25,7 @@ def levenshsim(engram, sequence):
             c = c+1
         return(min(a,b,c))
 print(levenshsim("cat", "cap"))
+
+def rawDataDenoiser(raw_data){
+    
+}

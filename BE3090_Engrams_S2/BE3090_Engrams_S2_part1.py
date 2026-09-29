@@ -126,7 +126,7 @@ for neurons in codes_A[0]:
             instances = instances + 1
         elif((neurons[0], neurons[1]+i*1000 + 30) in codes_A[i]):
             instances = instances + 1
-    if(instances >= 5):
+    if(instances >= 4):
         denoised_neurons.append((neurons[0], neurons[1], instances))
         print("hello")
 print(denoised_neurons)

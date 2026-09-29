@@ -4,17 +4,16 @@ import numpy as np
 
 from scipy.signal import find_peaks
 from operator import itemgetter
-data = sio.loadmat('session1_training_chars_12.mat')  # Load in the .mat file containing neuron activity data
-print(data.keys())
+data = sio.loadmat('session2_training_chars_misfire_12.mat')  # Load in the .mat file containing neuron activity data
+
 activity_old = data['neuron_network_imaging'] # Extract the neuron activity data from the loaded .mat file
-print(activity_old.shape)
+
 activity = np.ascontiguousarray(np.moveaxis(activity_old, 2, 0))
-print(activity)
-print(activity.shape)      #'''0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[]^_`{|}~    '''
+     #'''0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[]^_`{|}~    '''
 
 with open("char_train.txt", "r") as file:
     traincharsequence = file.read()  # Read the contents of the text file into a string variable:
-print(traincharsequence)
+
 
 
 #print(activity.shape)
@@ -43,25 +42,62 @@ def getsequence(arr_peaks):
     #now we have to determine which neuron firings are repeated across all codes
     
     denoised_neurons = []
-    for neurons in codes_A[0]:
-        instances = 1
-        for i in range (1,10,1):
-            if((neurons[0], neurons[1]+i*100) in codes_A[i]):
-                instances = instances + 1
-            elif((neurons[0], neurons[1]+i*100 - 1) in codes_A[i]):
-                instances = instances + 1
-            elif((neurons[0], neurons[1]+i*100 - 2) in codes_A[i]):
-                instances = instances + 1
-            elif((neurons[0], neurons[1]+i*100 - 3) in codes_A[i]):
-                instances = instances + 1
-            elif((neurons[0], neurons[1]+i*100 + 1) in codes_A[i]):
-                instances = instances + 1
-            elif((neurons[0], neurons[1]+i*100 + 2) in codes_A[i]):
-                instances = instances + 1
-            elif((neurons[0], neurons[1]+i*100 + 3) in codes_A[i]):
-                instances = instances + 1
-        if(instances >= 5):
-            denoised_neurons.append((neurons[0], neurons[1], instances))
+    # for neurons in codes_A[0]:
+    #     instances = 1
+    #     for i in range (1,10,1):
+    #         if((neurons[0], neurons[1]+i*100) in codes_A[i]):
+    #             instances = instances + 1
+    #         elif((neurons[0], neurons[1]+i*100 - 1) in codes_A[i]):
+    #             instances = instances + 1
+    #         elif((neurons[0], neurons[1]+i*100 - 2) in codes_A[i]):
+    #             instances = instances + 1
+    #         elif((neurons[0], neurons[1]+i*100 - 3) in codes_A[i]):
+    #             instances = instances + 1
+    #         elif((neurons[0], neurons[1]+i*100 + 1) in codes_A[i]):
+    #             instances = instances + 1
+    #         elif((neurons[0], neurons[1]+i*100 + 2) in codes_A[i]):
+    #             instances = instances + 1
+    #         elif((neurons[0], neurons[1]+i*100 + 3) in codes_A[i]):
+    #             instances = instances + 1
+    #     if(instances >= 5):
+    #         denoised_neurons.append((neurons[0], neurons[1], instances))
+    # print(len(denoised_neurons))
+    dict_neuron_tuples = {}
+    num = 0
+    for i in codes_A:
+        for j in i:
+                mod = j[1]*10%1000
+                print(j)
+                print(str(j[0]) + " "+str(mod))
+
+                if((j[0],mod) in dict_neuron_tuples):
+                    curval = dict_neuron_tuples.get((j[0],mod))
+                    dict_neuron_tuples.update({(j[0],mod): curval+1})
+                # elif((j[0],mod+10) in dict_neuron_tuples):
+                #     curval = dict_neuron_tuples.get((j[0],mod+10))
+                #     dict_neuron_tuples.update({(j[0],mod+10): curval+1})
+                # elif((j[0],mod+20) in dict_neuron_tuples):
+                #     curval = dict_neuron_tuples.get((j[0],mod+20))
+                #     dict_neuron_tuples.update({(j[0],mod+20): curval+1})
+                # elif((j[0],mod+30) in dict_neuron_tuples):
+                #     curval = dict_neuron_tuples.get((j[0],mod+30))
+                #     dict_neuron_tuples.update({(j[0],mod+30): curval+1})
+                # elif((j[0],mod-10) in dict_neuron_tuples):
+                #     curval = dict_neuron_tuples.get((j[0],mod-10))
+                #     dict_neuron_tuples.update({(j[0],mod-10): curval+1})
+                # elif((j[0],mod-20) in dict_neuron_tuples):
+                #     curval = dict_neuron_tuples.get((j[0],mod-20))
+                #     dict_neuron_tuples.update({(j[0],mod-20): curval+1})
+                # elif((j[0],mod-30) in dict_neuron_tuples):
+                #     curval = dict_neuron_tuples.get((j[0],mod-30))
+                #     dict_neuron_tuples.update({(j[0],mod-30): curval+1})
+                else:
+                    dict_neuron_tuples[(j[0],mod)] = 1
+        for key,value in dict_neuron_tuples.items():
+            if(value >= 9):
+            
+                denoised_neurons.append((key, value))
+        num = num + 1
     print(len(denoised_neurons))
     return(str(denoised_neurons))
 
@@ -87,11 +123,7 @@ def getsequence(arr_peaks):
 #plt.xlabel('Time (frames)')
 #plt.ylabel('Activity')
 #plt.show()
-print(activity[1].shape)
-print("hello")
-print("end of test")
 codes = []
-print(len(activity))
 for letters in activity:
     peaks = [] # Initialize an empty list to store peak indices for each neuron
 
@@ -110,7 +142,6 @@ for letters in activity:
 # determine numeric code sequence from+
 
 training_set_key = []
-print(len(codes))
 for i in range (len(codes)):
         training_set_key.append((traincharsequence[i], codes[i]))
 
