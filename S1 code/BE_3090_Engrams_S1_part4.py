@@ -30,9 +30,9 @@ def levenshsim(engram, sequence):
         return(min(a,b,c)) """
 
 
-def vectorsim(vector1, vector2):
-    vector1 = np.array(vector1)
-    vector2 = np.array(vector2)
+def vectorsim(matrix1, matrix2):
+    vector1 = np.array(matrix1)
+    vector2 = np.array(matrix2)
     #empty arrays for binary arrays later
     vector1bin = np.zeros((len(vector1),len(vector1[0])))
     vector2bin = np.zeros((len(vector1),len(vector1[0])))
@@ -60,7 +60,9 @@ def vectorsim(vector1, vector2):
 
     numerator = np.sum(vector1bin * vector2bin)
     
-    
+    print(vector1bin)
+    print("hello")
+    print(vector2bin)
     denom = np.linalg.norm(vector1bin) * np.linalg.norm(vector2bin)
     
     
