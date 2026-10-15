@@ -24,6 +24,8 @@ for neuron in range(200):        #Loop through each neuron and find peaks, adddi
     peakindices,_ = find_peaks(activity[:, neuron], height = 100, distance = 10)
     peaks.append(peakindices)
 
+enconding = np.zeros((200, activity.shape[0])) # Initialize a 2D array to store the encoding of neuron activity
+
 plt.figure(figsize=(12, 8))
 
 for neuron in range(200):

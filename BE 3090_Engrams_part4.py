@@ -26,6 +26,23 @@ def levenshsim(engram, sequence):
         return(min(a,b,c))
 print(levenshsim("cat", "cap"))
 
-def rawDataDenoiser(raw_data){
+def rawDataDenoiser(raw_data):
+    for i in range (raw_data):
+        for j in range(raw_data[0]):
+            if(raw_data[i][j] < 50):
+                raw_data[i][j] = 0
+
+def cosineSim(orig, comp):
+    orig1 = np.array(orig)
+    comp1 = np.array(comp)
     
-}
+    res = np.sum(orig1 * comp1)/(np.linalg.norm(orig1) * np.linalg.norm(comp1))
+    return res
+
+arr1 = ([1,2,3],
+    [4,5,6],
+    [7,8,9])
+arr2 = ([59,2,16],
+    [42,67,420],
+    [714,4,92])
+print(cosineSim(arr1, arr2))

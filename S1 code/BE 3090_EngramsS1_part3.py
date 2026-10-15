@@ -4,11 +4,9 @@ import numpy as np
 
 from scipy.signal import find_peaks
 from operator import itemgetter
-data = sio.loadmat('session1_training_chars_12.mat')  # Load in the .mat file containing neuron activity data
+data = sio.loadmat('session2_b_variable_length_12.mat')  # Load in the .mat file containing neuron activity data
 print(data.keys())
-activity_old = data['neuron_network_imaging'] # Extract the neuron activity data from the loaded .mat file
-print(activity_old.shape)
-activity = np.ascontiguousarray(np.moveaxis(activity_old, 2, 0))
+activity = data['neuron_network_imaging'] # Extract the neuron activity data from the loaded .mat file
 print(activity)
 print(activity.shape)      #'''0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[]^_`{|}~    '''
 

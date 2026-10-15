@@ -9,20 +9,16 @@ data = sio.loadmat('session2_training_chars_misfire_12.mat')  # Load in the .mat
 activity_old = data['neuron_network_imaging'] # Extract the neuron activity data from the loaded .mat file
 
 activity = np.ascontiguousarray(np.moveaxis(activity_old, 2, 0))
-     #'''0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[]^_`{|}~    '''
-
+     
 with open("char_train.txt", "r") as file:
     traincharsequence = file.read()  # Read the contents of the text file into a string variable:
 
 
-
-#print(activity.shape)
-#print(activity.dtype)
-#print(activity[:5, :5])
 def getsequence(arr_peaks):
-     # takes in a list of tuples of (arr of peak indices for the character, the character)
+     # takes in a list of tuples of (neuron number, time))
+     # What get sequence takes in is in the format: (95, np.int64(292))
 
-    Neuronactivationtuples = arr_peaks
+    Neuronactivationtuples = arr_peaks # gets the list of tuples of (neuron number, time)
     
 
     codes_A = [] # a list of lists (containing tuples) containing the 10 iterations of A
@@ -40,7 +36,7 @@ def getsequence(arr_peaks):
         # codes_A.append(temparr) # adds this sequence of A engram to codes_A
 
     #now we have to determine which neuron firings are repeated across all codes
-    
+    print(codes_A)
     denoised_neurons = []
     # for neurons in codes_A[0]:
     #     instances = 1
@@ -63,16 +59,16 @@ def getsequence(arr_peaks):
     #         denoised_neurons.append((neurons[0], neurons[1], instances))
     # print(len(denoised_neurons))
     dict_neuron_tuples = {}
-    num = 0
     for i in codes_A:
         for j in i:
-                mod = j[1]*10%1000
-                print(j)
-                print(str(j[0]) + " "+str(mod))
+                mod = j[1]%100
+                
+                
 
                 if((j[0],mod) in dict_neuron_tuples):
-                    curval = dict_neuron_tuples.get((j[0],mod))
-                    dict_neuron_tuples.update({(j[0],mod): curval+1})
+                    #print(str(j[0]) + " "+ str(j[1]))
+                    currentVal = dict_neuron_tuples.get((j[0],mod))
+                    dict_neuron_tuples.update({(j[0],mod): currentVal+1})
                 # elif((j[0],mod+10) in dict_neuron_tuples):
                 #     curval = dict_neuron_tuples.get((j[0],mod+10))
                 #     dict_neuron_tuples.update({(j[0],mod+10): curval+1})
@@ -92,14 +88,13 @@ def getsequence(arr_peaks):
                 #     curval = dict_neuron_tuples.get((j[0],mod-30))
                 #     dict_neuron_tuples.update({(j[0],mod-30): curval+1})
                 else:
-                    dict_neuron_tuples[(j[0],mod)] = 1
-        for key,value in dict_neuron_tuples.items():
-            if(value >= 9):
-            
-                denoised_neurons.append((key, value))
-        num = num + 1
-    print(len(denoised_neurons))
+                    dict_neuron_tuples.setdefault((j[0],mod),1)
+    for key,value in dict_neuron_tuples.items():
+        if(value >= 5):
+            denoised_neurons.append((key, value))
+
     return(str(denoised_neurons))
+
 
 
 
@@ -118,26 +113,25 @@ def getsequence(arr_peaks):
 
 
 
-"""Visualize Neuron activity of one neuron over time"""
-#plt.plot(activity[:,49])
-#plt.xlabel('Time (frames)')
-#plt.ylabel('Activity')
-#plt.show()
+
+#Codes represent an array of arrays
 codes = []
+
+#iterates through all 2D arrays, each 2D array representing a character
 for letters in activity:
     peaks = [] # Initialize an empty list to store peak indices for each neuron
 
-    for neuron in range(letters.shape[1]):        #Loop through each neuron and find peaks, addding the indices of the peaks to the peaks list
-        peakindices,_ = find_peaks(letters[:, neuron], height = 100, distance = 10)
-        peaks.append(peakindices)
+    for neuron in range(letters.shape[1]):        #Loop through each neuron (1-200) and find peaks, addding the indices of the peaks to the peaks list
+        peakindices,_ = find_peaks(letters[:, neuron], height = 100, distance = 10) #finds the peaks for the particular neuron, and stores this in an array
+        peaks.append(peakindices) #appends the array of indices peakindices for the particular neuron
 
-    Neuronactivationtuples = []
-    i = 1
-    for neuron in range(len(peaks)):
+    Neuronactivationtuples = [] #A list of tuples in the format ((95, np.int64(292))), where the first element is the neuron number and the second element is the time at which a peak for that neuron occurs (in centiseconds)
+    i = 1 #the number of the neuron in the tuple, from 1 - 200
+    for neuron in range(len(peaks)): #iterates through peaks using nested loops to extract all peaks for each neuron and put in tuple with (neuron, peaktime) format
         for element in peaks[neuron]:
             Neuronactivationtuples.append((i,element))
         i = i+1
-    Neuronactivationtuples.sort(key = itemgetter(1))
+    Neuronactivationtuples.sort(key = itemgetter(1)) #sort this list of tuples by time of the peak
     codes.append(Neuronactivationtuples)
 # determine numeric code sequence from+
 
@@ -146,5 +140,6 @@ for i in range (len(codes)):
         training_set_key.append((traincharsequence[i], codes[i]))
 
 #for l in range (len(training_set_key)):
-print(training_set_key[0][0]) #prints out char in place (l, 0)
+#print(training_set_key[0][1])
+#print(training_set_key[0][0]) #prints out char in place (l, 0)
 print(getsequence(training_set_key[0][1])) #prints out sequence from arr in place (l, 1)
