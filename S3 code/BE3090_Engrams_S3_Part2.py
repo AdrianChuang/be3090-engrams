@@ -19,24 +19,40 @@ data = sio.loadmat('session3_training_chars_12.mat')  # Load in the .mat file co
 activity_old = data['neuron_network_imaging'] # Extract the neuron activity data from the loaded .mat file
 
 activity = np.ascontiguousarray(np.moveaxis(activity_old, 2, 0))
+
+period_map = {} #Map from character index to period
      
 with open("char_train.txt", "r") as file:
     traincharsequence = file.read()  # Read the contents of the text file into a string variable:
 
+def get_correct_period(activity_matrix):
+    min_np, max_np = id_pot_periods(len(activity_matrix))
+    current_max_similarity = -1
+    current_max_period = 0
 
-def getsequence(arr_peaks):
+    print(min_np)
+    print(max_np)
+    #iterate through all potential periods
+    for i in range(min_np, max_np + 1, 1):
+        if(len(activity_matrix) % i == 0):
+            val = find_period(activity_matrix, i)
+            if(val > current_max_similarity):
+                current_max_similarity = val
+                current_max_period = i
+    return current_max_period
+
+def getsequence(character_index):
      # takes in a list of tuples of (neuron number, time))
      # What get sequence takes in is in the format: (95, np.int64(292))
 
-    Neuronactivationtuples = arr_peaks # gets the list of tuples of (neuron number, time)
-    
+    Neuronactivationtuples = training_set_key[character_index][1] # gets the list of tuples of (neuron number, time)
 
     codes_A = [] # a list of lists (containing tuples) containing the 10 iterations of A
     #find the correct length segments
     
     #This iterates through neuronactivationtuples and blocks it into the correct length segments
 
-    for i in range(1000, 11000, 1000): 
+    for i in range(0, len(activity[character_index][0]), 1000): 
         temparr = []
         
         for tuple in Neuronactivationtuples:
@@ -152,6 +168,11 @@ for letters in activity:
 training_set_key = []
 for i in range (len(codes)):
         training_set_key.append((traincharsequence[i], codes[i]))
+
+
+#------- Populate period_map with the correct period for each character in the training set -------#
+for i in range(activity.shape[0]):
+    period_map[i] = get_correct_period(activity[i])
 
 #for l in range (len(training_set_key)):
 #print(training_set_key[0][1])

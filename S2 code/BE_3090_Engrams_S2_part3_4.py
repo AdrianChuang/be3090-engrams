@@ -21,7 +21,7 @@ def id_pot_periods(datalength):
 
 #this determines whether a particular "guess" for the period
 #actually is correct (high similarity score between periods)
-def find_period(data, test_np):
+def find_period(data, test_np): #NEEDS RENAMING, Returns similarity score of data and test_np
     print(data.shape[0])
     fraction = 1/test_np #test_np/(data.shape[0])
     first_period = data[:int(fraction*len(data))]
@@ -30,11 +30,7 @@ def find_period(data, test_np):
     
     j = vectorsim(first_period, second_period)
     print(j)
-    if(j > 0.9):
-        
-        return 1
-    else:
-        return 0
+    return j #return similarity score between first and second period
 
 
 #now test our methods on the data!
