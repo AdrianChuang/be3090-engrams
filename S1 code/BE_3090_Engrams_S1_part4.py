@@ -29,6 +29,20 @@ def levenshsim(engram, sequence):
             c = c+1
         return(min(a,b,c)) """
 
+def vectorsim1(matrix1, matrix2):
+    vector1bin = matrix1
+    vector2bin = matrix2
+    numerator = np.sum(vector1bin * vector2bin)
+    
+    
+    denom = np.linalg.norm(vector1bin) * np.linalg.norm(vector2bin)
+    
+    
+    if(denom == 0):
+        return 0
+    else:
+        return numerator/denom
+
 
 def vectorsim(matrix1, matrix2):
     vector1 = np.array(matrix1)
