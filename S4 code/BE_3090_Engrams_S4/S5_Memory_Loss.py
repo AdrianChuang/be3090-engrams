@@ -15,11 +15,11 @@ from BE_3090_Engrams_S1_part4 import vectorsim
 #this variable is dictionary containing all char, encoding pairs
 matrix_map = {}
 #this variable stores the text sequence that we will be using in this part of the lab
-characterseq1 = ""
-characterseq2 = ""
-characterseq3 = ""
-characterseq4 = ""
-characterseq5 = ""
+characterseq1 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec."
+characterseq2 = "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids"
+characterseq3 = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary re"
+characterseq4 = "A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. I am alone, and feel the charm of existence in this spot, which was created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisit"
+characterseq5 = "CJ Stroud is a certified bum. Bro had one good rookie season and has been coasting ever since. His pocket presence vanishes under pressure, his decision-making is questionable, and he folds when the Texans need him most. At this point, calling him a franchise quarterback is just disrespectful to actual franchise quarterbacks. He's washed."
 
 ##dict is the dictionary containing character, encoding pairs
 def get_encoding_from_seq(sequence, dict):
