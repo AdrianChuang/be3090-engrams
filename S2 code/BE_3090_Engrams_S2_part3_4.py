@@ -5,7 +5,6 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "S1 code"))
 from BE_3090_Engrams_S1_part4 import vectorsim
 import math
-np.set_printoptions(threshold=sys.maxsize, linewidth=sys.maxsize)
 
 #discover how long one recall could potentially be (range min, max)
 def id_pot_periods(datalength): 
@@ -22,14 +21,13 @@ def id_pot_periods(datalength):
 #this determines whether a particular "guess" for the period
 #actually is correct (high similarity score between periods)
 def find_period(data, test_np): #NEEDS RENAMING, Returns similarity score of data and test_np
-    print(data.shape[0])
+    
     fraction = 1/test_np #test_np/(data.shape[0])
     first_period = data[:int(fraction*len(data))]
     
     second_period = data[int(fraction*len(data)):int(2*fraction*len(data))]
     
     j = vectorsim(first_period, second_period)
-    print(j)
     return j #return similarity score between first and second period
 
 
@@ -42,8 +40,7 @@ activity = data['neuron_network_imaging'][0][0] # Extract the neuron activity da
 
 min_np, max_np = id_pot_periods(len(activity))
 
-print(min_np)
-print(max_np)
+
 #iterate through all potential periods
 for i in range(min_np, max_np + 1, 1):
     if(len(activity) % i == 0):

@@ -60,9 +60,7 @@ def vectorsim(matrix1, matrix2):
 
     numerator = np.sum(vector1bin * vector2bin)
     
-    print(vector1bin)
-    print("hello")
-    print(vector2bin)
+    
     denom = np.linalg.norm(vector1bin) * np.linalg.norm(vector2bin)
     
     
