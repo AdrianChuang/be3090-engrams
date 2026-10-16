@@ -98,7 +98,7 @@ def recall_pct(characterseq1, characterseq2):
     recalled_words = sum(s1word == s2word
         for s1word, s2word in zip(sequence_1_words, sequence_2_words))
     print(sequence_2_words)
-    return(recalled_words/len(sequence_2_words))
+    return(recalled_words/len(sequence_1_words))
 
 def memory_pct(characterseq, decoder):
     encodingseq = get_encoding_from_seq(
