@@ -8,6 +8,9 @@ from operator import itemgetter
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "S1 code"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "S2 code"))
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "S3 code")) 
+from BE_3090_Engrams_S3_Part2 import character_to_matrix_map    
 from BE_3090_Engrams_S1_part4 import vectorsim
 #this variable is dictionary containing all char, encoding pairs
 matrix_map = {}
@@ -55,8 +58,17 @@ def recall_pct(characterseq1, characterseq2):
     recalled_words = sum(s1word == s2word
         for s1word, s2word in zip(sequence_1_words, sequence_2_words))
     return(recalled_words/len(sequence_2_words))
-def memory_pct(characterseq, character_encoding, key):
+
+def memory_pct(characterseq, dict):
+    encodingseq = get_encoding_from_seq(characterseq, dict)
     decoded_seq = ""
+
+    for i in range(len(characterseq)):
+        char_matrix = encodingseq[i]
+        best_char, _ = determine_best_char(char_matrix, dict)
+        decoded_seq += best_char
+
+    return recall_pct(characterseq, decoded_seq)
 
 
     
