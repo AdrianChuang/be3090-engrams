@@ -29,19 +29,10 @@ with open("char_train.txt", "r") as file:
 
 def get_correct_period(activity_matrix):
     min_np, max_np = id_pot_periods(len(activity_matrix))
-    current_max_similarity = -1
-    current_max_period = 0
-
-    #print(min_np)
-    #print(max_np)
-    #iterate through all potential periods
-    for i in range(min_np, max_np + 1, 1):
-        if(len(activity_matrix) % i == 0):
-            val = find_period(activity_matrix, i)
-            if(val > current_max_similarity):
-                current_max_similarity = val
-                current_max_period = i
-    return int(len(activity_matrix)/current_max_period)
+    L = len(activity_matrix)
+    scores = {i: find_period(activity_matrix, i) for i in range(min_np, max_np + 1) if L % i == 0}
+    best = max(scores.values())
+    return L // max(i for i, s in scores.items() if s >= 0.9 * best)
 
 def getsequence(character_index, NAT, character_raw_matrix_length, period):
      # takes in a list of tuples of (neuron number, time))
