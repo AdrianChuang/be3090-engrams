@@ -94,7 +94,7 @@ for letters in activity:
     peaks = [] # Initialize an empty list to store peak indices for each neuron
 
     for neuron in range(letters.shape[1]):        #Loop through each neuron and find peaks, addding the indices of the peaks to the peaks list
-        peakindices,_ = find_peaks(letters[:, neuron], height = 100, distance = 10)
+        peakindices,_ = find_peaks(letters[:, neuron], height = 100, distance = 3)
         peaks.append(peakindices)
 
     Neuronactivationtuples = []

@@ -40,7 +40,7 @@ def vectorsim2(raw_matrix, binary_matrix):
     # binarize only the raw matrix, same settings as the rest of your pipeline
     raw_bin = np.zeros(raw.shape, dtype=int)
     for neuron in range(raw.shape[1]):
-        peakindices, _ = find_peaks(raw[:, neuron], height=100, distance=10)
+        peakindices, _ = find_peaks(raw[:, neuron], height=100, distance=3)
         raw_bin[peakindices, neuron] = 1
 
     numerator = np.sum(raw_bin * binary)
@@ -77,12 +77,12 @@ def vectorsim(matrix1, matrix2):
     vector1peaks = []
     #first identify all the peaks per neuron
     for neuron in range(len(vector1[0])):        #Loop through each neuron and find peaks, addding the indices of the peaks to the peaks list
-        peakindices,_ = find_peaks(vector1.T[neuron], height = 100, distance = 10)
+        peakindices,_ = find_peaks(vector1.T[neuron], height = 100, distance = 3)
         for indices in peakindices:
             vector1peaks.append((indices, neuron))
     vector2peaks = []
     for neuron in range(len(vector2[0])):
-        peakindices,_ = find_peaks(vector2.T[neuron], height = 100, distance = 10)
+        peakindices,_ = find_peaks(vector2.T[neuron], height = 100, distance = 3)
         for indices in peakindices:
             vector2peaks.append((indices, neuron))
     #convert first 2d matrix to binary

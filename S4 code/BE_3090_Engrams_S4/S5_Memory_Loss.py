@@ -151,3 +151,108 @@ print(memory_pct(characterseq5, matrix_map))
 
 
 
+
+
+
+import re
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import t as t_dist
+
+# ---------- fast decoder (same cosine score as vectorsim1, but much quicker) ----------
+def build_template_info(decoder):
+    """Store each template as (length, event rows, event cols, event count)."""
+    info = {}
+    for ch, M in decoder.items():
+        rows, cols = np.nonzero(M)
+        info[ch] = (M.shape[0], rows, cols, rows.size)
+    return info
+
+def decode_fast(stream, info):
+    n_time = stream.shape[0]
+    cum = np.concatenate(([0], np.cumsum(stream.sum(axis=1))))   # events up to each row
+    lengths = [v[0] for v in info.values()]
+    typical_len, min_len = int(np.median(lengths)), min(lengths)
+    pos, out = 0, []
+    while pos < n_time:
+        best_ch, best_sim, best_len = None, 0.0, typical_len
+        for ch, (L, rows, cols, n_events) in info.items():
+            if pos + L > n_time or n_events == 0:
+                continue
+            n_window = cum[pos + L] - cum[pos]
+            if n_window == 0:
+                continue
+            overlap = stream[pos + rows, cols].sum()
+            sim = overlap / np.sqrt(n_events * n_window)   # cosine for 0/1 matrices
+            if sim > best_sim:
+                best_ch, best_sim, best_len = ch, sim, L
+        if best_ch is None:                  # nothing matched this window
+            if n_time - pos < min_len:
+                break
+            out.append('?')                  # failed letter, skip a typical length
+            pos += typical_len
+        else:
+            out.append(best_ch)
+            pos += best_len
+    return ''.join(out)
+
+# ---------- recall efficiency: fully recalled words / total words in the original ----------
+WORD = re.compile(r"[A-Za-z]+(?:'[A-Za-z]+)?")
+def word_recall(original, decoded):
+    words = list(WORD.finditer(original))
+    ok = sum(decoded[m.start():m.end()] == m.group() for m in words)
+    return ok / len(words)
+
+# ---------- experiment ----------
+passages = [characterseq1, characterseq2, characterseq3, characterseq4, characterseq5]
+info = build_template_info(matrix_map)
+n_neurons = next(iter(matrix_map.values())).shape[1]
+
+fractions = [0, .05, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1.0]     # coarse grid
+levels = sorted({int(round(f * n_neurons)) for f in fractions})   # neurons removed
+n_trials = 5
+rng = np.random.default_rng(0)
+
+results = np.zeros((len(levels), len(passages), n_trials))
+for p, seq in enumerate(passages):
+    clean = get_encoding_from_seq(seq, matrix_map)
+    for trial in range(n_trials):
+        order = rng.permutation(n_neurons)        # one random removal order per trial
+        for li, k in enumerate(levels):
+            damaged = clean.copy()
+            damaged[:, order[:k]] = 0             # remove the first k neurons in that order
+            results[li, p, trial] = word_recall(seq, decode_fast(damaged, info))
+    print(f"passage {p + 1} done")
+
+# ---------- average and confidence interval across passages ----------
+per_passage = results.mean(axis=2)                # (levels, passages), averaged over trials
+mean_curve = per_passage.mean(axis=1)
+sd = per_passage.std(axis=1, ddof=1)
+n_p = len(passages)
+half_width = t_dist.ppf(0.975, n_p - 1) * sd / np.sqrt(n_p)
+
+# ---------- plot ----------
+plt.figure(figsize=(9, 6))
+for p in range(n_p):
+    plt.plot(levels, per_passage[:, p], color='gray', alpha=0.35, lw=1, marker='o', ms=3)
+plt.plot(levels, mean_curve, 'k-o', lw=2, label='Mean across passages')
+plt.fill_between(levels,
+                 np.clip(mean_curve - half_width, 0, 1),
+                 np.clip(mean_curve + half_width, 0, 1),
+                 alpha=0.25, label=f'95% CI of the mean (t, df={n_p - 1})')
+plt.xlabel('Neurons removed')
+plt.ylabel('Recall efficiency (fully recalled words / total words)')
+plt.ylim(-0.02, 1.02)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# ---------- neurons lost before half the words are gone ----------
+below = np.where(mean_curve < 0.5)[0]
+if below.size and below[0] > 0:
+    i = below[0]
+    x0, x1, y0, y1 = levels[i - 1], levels[i], mean_curve[i - 1], mean_curve[i]
+    print("Approx. neurons removed at 50% recall:", round(x0 + (0.5 - y0) * (x1 - x0) / (y1 - y0)))
+
+
+
