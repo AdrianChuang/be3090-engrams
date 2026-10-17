@@ -29,6 +29,27 @@ def levenshsim(engram, sequence):
             c = c+1
         return(min(a,b,c)) """
 
+def vectorsim2(raw_matrix, binary_matrix):
+    """Cosine similarity: first input is raw fluorescence, second is already 0/1."""
+    raw = np.asarray(raw_matrix)
+    binary = np.asarray(binary_matrix)
+
+    if raw.shape != binary.shape:
+        raise ValueError(f"Shape mismatch: {raw.shape} vs {binary.shape}")
+
+    # binarize only the raw matrix, same settings as the rest of your pipeline
+    raw_bin = np.zeros(raw.shape, dtype=int)
+    for neuron in range(raw.shape[1]):
+        peakindices, _ = find_peaks(raw[:, neuron], height=100, distance=10)
+        raw_bin[peakindices, neuron] = 1
+
+    numerator = np.sum(raw_bin * binary)
+    denom = np.linalg.norm(raw_bin) * np.linalg.norm(binary)
+
+    if denom == 0:
+        return 0
+    return numerator / denom
+
 def vectorsim1(matrix1, matrix2):
     vector1bin = matrix1
     vector2bin = matrix2

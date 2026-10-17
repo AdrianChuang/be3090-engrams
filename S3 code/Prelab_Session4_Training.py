@@ -8,7 +8,7 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "S1 code"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "S2 code"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "S4 code"))
-from BE_3090_Engrams_S1_part4 import vectorsim
+from BE_3090_Engrams_S1_part4 import vectorsim, vectorsim2
 from BE_3090_Engrams_S2_part3_4 import id_pot_periods
 from BE_3090_Engrams_S2_part3_4 import find_period
 
@@ -169,7 +169,8 @@ for i in range (len(codes)):
 #------- Populate period_map with the correct period for each character in the training set -------#
 for i in range(len(activity)):
     period_map[i] = get_correct_period(activity[i])
-
+print(sorted(set(period_map.values())))   # should all be 50–249
+  # should be 96
 #for l in range (len(training_set_key)):
 #print(training_set_key[0][1])
 #print(training_set_key[0][0]) #prints out char in place (l, 0)
@@ -210,7 +211,7 @@ def determine_best_char(matrix, decoder):
     for key,value in decoder.items():
         ##check to see both matrices are the same columns wide##
         if matrix.shape[0] >= value.shape[0] and matrix.shape[1] == value.shape[1]:
-            similarity = vectorsim(matrix[:value.shape[0], :], value)
+            similarity = vectorsim2(matrix[:value.shape[0], :], value)
             if(similarity > max_sim):
                 max_sim = similarity
                 opt_char = key

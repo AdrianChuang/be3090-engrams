@@ -123,7 +123,7 @@ def memory_pct(characterseq, decoder):
     for _ in range(len(characterseq)):
         remaining_encoding = encodingseq[current_row:, :]
 
-        best_char, similarity = determine_best_char(
+        best_char, _ = determine_best_char(
             remaining_encoding,
             decoder
         )
